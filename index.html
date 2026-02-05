@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Greek Memory Game - Leaderboard Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f1f5f9;
+            --white: #ffffff;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --shadow-lg: rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Login Screen */
+        .login-screen {
+            background: white;
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            max-width: 450px;
+            margin: 0 auto;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #64748b;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .user-welcome {
+            background: linear-gradient(135deg, var(--light), white);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .btn-logout {
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            color: var(--dark);
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+
+        /* Menu Screen */
+        .menu-screen {
+            background: white;
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            animation: slideUp 0.6s ease-out;
+            display: none;
+        }
+
+        .menu-screen.active {
+            display: block;
+        }
+
+        .leaderboard-toggle {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .tab-buttons {
+            display: inline-flex;
+            background: var(--light);
+            border-radius: 12px;
+            padding: 0.25rem;
+        }
+
+        .tab-btn {
+            padding: 0.75rem 2rem;
+            border: none;
+            background: transparent;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            color: #64748b;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: var(--dark);
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+
+        .game-modes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .mode-card {
+            background: linear-gradient(135deg, var(--light) 0%, white 100%);
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mode-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .mode-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 32px var(--shadow-lg);
+            border-color: var(--primary);
+        }
+
+        .mode-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .mode-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .mode-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .mode-desc {
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .difficulty-selector {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .difficulty-label {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 1rem;
+        }
+
+        .difficulty-options {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .difficulty-btn {
+            padding: 0.75rem 2rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: white;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .difficulty-btn:hover {
+            border-color: var(--primary);
+            background: var(--light);
+        }
+
+        .difficulty-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .difficulty-btn.easy.active { background: var(--success); border-color: var(--success); }
+        .difficulty-btn.hard.active { background: var(--danger); border-color: var(--danger); }
+
+        .custom-grid-input-container {
+            margin-top: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .custom-grid-input {
+            width: 80px;
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .custom-grid-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .grid-separator {
+            font-size: 1.5rem;
+            color: var(--dark);
+            font-weight: 600;
+        }
+
+        /* Leaderboard */
+        .leaderboard-view {
+            display: none;
+        }
+
+        .leaderboard-view.active {
+            display: block;
+        }
+
+        .leaderboard-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .leaderboard-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .leaderboard-subtitle {
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 0.5rem;
+        }
+
+        .leaderboard-table th {
+            padding: 1rem;
+            text-align: left;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .leaderboard-table td {
+            padding: 1.25rem 1rem;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .leaderboard-table td:first-child {
+            border-left: 1px solid #e2e8f0;
+            border-radius: 12px 0 0 12px;
+        }
+
+        .leaderboard-table td:last-child {
+            border-right: 1px solid #e2e8f0;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .leaderboard-rank {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--dark);
+            width: 60px;
+        }
+
+        .rank-medal {
+            font-size: 1.5rem;
+        }
+
+        .leaderboard-player {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .leaderboard-time {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .leaderboard-score {
+            font-weight: 600;
+            color: var(--success);
+        }
+
+        .leaderboard-date {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .current-user-row {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe) !important;
+            border-left: 4px solid var(--primary) !important;
+        }
+
+        /* Game Screen */
+        .game-screen {
+            display: none;
+        }
+
+        .game-screen.active {
+            display: block;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .game-header {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .stat-group {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .score-value {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .game-controls {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--dark);
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: var(--light);
+            border-color: var(--primary);
+        }
+
+        .game-board {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            perspective: 1000px;
+        }
+
+        .game-board.grid-4x4 {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .game-board.grid-4x5 {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .game-board.grid-6x6 {
+            grid-template-columns: repeat(6, 1fr);
+        }
+
+        .game-board {
+            max-width: 100%;
+        }
+
+        .card {
+            aspect-ratio: 1;
+            background: white;
+            border-radius: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px var(--shadow);
+            user-select: none;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        .card:hover:not(.flipped):not(.matched) {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 8px 24px var(--shadow-lg);
+        }
+
+        .card:hover::before {
+            opacity: 0.3;
+        }
+
+        .card-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+        }
+
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 2rem;
+        }
+
+        .card-front {
+            background: white;
+            transform: rotateY(180deg);
+            color: var(--dark);
+        }
+
+        .card.matched {
+            animation: matchPulse 0.6s ease-out;
+        }
+
+        .card.matched .card-front {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+        }
+
+        @keyframes matchPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        .card.wrong {
+            animation: shake 0.5s ease-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        .timer {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .timer.warning {
+            color: var(--warning);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 3rem;
+            border-radius: 24px;
+            text-align: center;
+            max-width: 500px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlide 0.4s ease-out;
+        }
+
+        @keyframes modalSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1rem;
+        }
+
+        .modal p {
+            font-size: 1.2rem;
+            color: #64748b;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+            padding: 2rem;
+            background: var(--light);
+            border-radius: 16px;
+        }
+
+        .modal-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .modal-stat-label {
+            font-size: 0.85rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .new-record {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            border: 2px solid var(--warning);
+        }
+
+        .new-record-text {
+            color: #92400e;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .login-screen, .menu-screen {
+                padding: 2rem 1.5rem;
+            }
+
+            .logo {
+                font-size: 2.5rem;
+            }
+
+            .game-modes {
+                grid-template-columns: 1fr;
+            }
+
+            .game-header {
+                flex-direction: column;
+            }
+
+            .stat-group {
+                width: 100%;
+                justify-content: space-around;
+            }
+
+            .game-board.grid-6x6 {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .card {
+                font-size: 1.8rem;
+            }
+
+            .modal-content {
+                padding: 2rem 1.5rem;
+                margin: 1rem;
+            }
+
+            .modal-stats {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .leaderboard-table {
+                font-size: 0.85rem;
+            }
+
+            .leaderboard-table th,
+            .leaderboard-table td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Screen -->
+        <div class="login-screen" id="loginScreen">
+            <h1 class="logo">ΜΝΗΜΗ</h1>
+            <p class="subtitle">Greek Memory Challenge</p>
+
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label class="form-label">Player Name</label>
+                    <input type="text" id="playerName" class="form-input" placeholder="Enter your name" required minlength="2">
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                    🎮 Start Playing
+                </button>
+            </form>
+        </div>
+
+        <!-- Menu Screen -->
+        <div class="menu-screen" id="menuScreen">
+            <div class="user-welcome">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">A</div>
+                    <div>
+                        <div class="user-name" id="userName">Player</div>
+                    </div>
+                </div>
+                <button class="btn-logout" onclick="logout()">Logout</button>
+            </div>
+
+            <div class="leaderboard-toggle">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" onclick="showTab('play')">Play Game</button>
+                    <button class="tab-btn" onclick="showTab('leaderboard')">🏆 Leaderboard</button>
+                </div>
+            </div>
+
+            <!-- Play Tab -->
+            <div id="playTab" class="play-view">
+                <h1 class="logo" style="margin-bottom: 0.5rem;">ΜΝΗΜΗ</h1>
+                <p class="subtitle">Greek Memory Challenge</p>
+
+                <div class="game-modes">
+                    <div class="mode-card" onclick="startGame('solo')">
+                        <div class="mode-icon">🎯</div>
+                        <div class="mode-title">Solo Challenge</div>
+                        <div class="mode-desc">Test your memory skills and beat your best score!</div>
+                    </div>
+
+                    <div class="mode-card" onclick="startGame('timed')">
+                        <div class="mode-icon">⏱️</div>
+                        <div class="mode-title">Time Trial</div>
+                        <div class="mode-desc">Race against the clock - compete for the leaderboard!</div>
+                    </div>
+
+                    <div class="mode-card" onclick="startGame('zen')">
+                        <div class="mode-icon">🧘</div>
+                        <div class="mode-title">Zen Mode</div>
+                        <div class="mode-desc">No pressure, unlimited points - just relax and play!</div>
+                    </div>
+                </div>
+
+                <div class="difficulty-selector">
+                    <div class="difficulty-label">Select Difficulty</div>
+                    <div class="difficulty-options">
+                        <button class="difficulty-btn easy active" onclick="setDifficulty('easy')">
+                            Easy (8 pairs)
+                        </button>
+                        <button class="difficulty-btn" onclick="setDifficulty('medium')">
+                            Medium (10 pairs)
+                        </button>
+                        <button class="difficulty-btn hard" onclick="setDifficulty('hard')">
+                            Hard (18 pairs)
+                        </button>
+                    </div>
+                </div>
+
+                <div class="difficulty-selector">
+                    <div class="difficulty-label">Or Choose Custom Grid Size</div>
+                    <div class="difficulty-options">
+                        <button class="difficulty-btn" onclick="setCustomGrid(2, 2)">
+                            2×2 (2 pairs)
+                        </button>
+                        <button class="difficulty-btn" onclick="setCustomGrid(3, 4)">
+                            3×4 (6 pairs)
+                        </button>
+                        <button class="difficulty-btn" onclick="setCustomGrid(4, 4)">
+                            4×4 (8 pairs)
+                        </button>
+                        <button class="difficulty-btn" onclick="setCustomGrid(4, 5)">
+                            4×5 (10 pairs)
+                        </button>
+                        <button class="difficulty-btn" onclick="setCustomGrid(5, 6)">
+                            5×6 (15 pairs)
+                        </button>
+                        <button class="difficulty-btn" onclick="setCustomGrid(6, 6)">
+                            6×6 (18 pairs)
+                        </button>
+                    </div>
+                    <div class="custom-grid-input-container">
+                        <input type="number" id="customRows" placeholder="Rows" min="2" max="8" class="custom-grid-input">
+                        <span class="grid-separator">×</span>
+                        <input type="number" id="customCols" placeholder="Cols" min="2" max="8" class="custom-grid-input">
+                        <button class="btn btn-primary" onclick="setCustomGridFromInput()">
+                            Apply Custom
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Leaderboard Tab -->
+            <div id="leaderboardTab" class="leaderboard-view">
+                <div class="leaderboard-header">
+                    <h2 class="leaderboard-title">🏆 Top 10 Champions</h2>
+                    <p class="leaderboard-subtitle">Fastest completion times</p>
+                </div>
+
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Player</th>
+                            <th>Time</th>
+                            <th>Score</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardBody">
+                        <!-- Leaderboard entries will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Game Screen -->
+        <div class="game-screen" id="gameScreen">
+            <div class="game-header">
+                <div class="stat-group">
+                    <div class="stat">
+                        <span class="stat-label">Score</span>
+                        <span class="stat-value score-value" id="score">100</span>
+                    </div>
+                    <div class="stat" id="timerStat">
+                        <span class="stat-label">Time</span>
+                        <span class="stat-value timer" id="timer">0:00</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Moves</span>
+                        <span class="stat-value" id="moves">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Matched</span>
+                        <span class="stat-value" id="matched">0 / 8</span>
+                    </div>
+                </div>
+                
+                <div class="game-controls">
+                    <button class="btn btn-secondary" onclick="showMenu()">
+                        ← Menu
+                    </button>
+                    <button class="btn btn-primary" onclick="restartCurrentGame()">
+                        🔄 Restart
+                    </button>
+                </div>
+            </div>
+
+            <div class="game-board grid-4x4" id="gameBoard"></div>
+        </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div class="modal" id="gameOverModal">
+        <div class="modal-content">
+            <div id="newRecordBanner" class="new-record" style="display: none;">
+                <div class="new-record-text">🎉 NEW RECORD! 🎉</div>
+            </div>
+            <div class="modal-icon" id="modalIcon">🎉</div>
+            <h2 id="modalTitle">Victory!</h2>
+            <p id="modalMessage">You've matched all the cards!</p>
+            
+            <div class="modal-stats">
+                <div class="modal-stat">
+                    <span class="modal-stat-label">Final Score</span>
+                    <span class="modal-stat-value" id="finalScore">100</span>
+                </div>
+                <div class="modal-stat">
+                    <span class="modal-stat-label">Moves</span>
+                    <span class="modal-stat-value" id="finalMoves">0</span>
+                </div>
+                <div class="modal-stat" id="finalTimeStat">
+                    <span class="modal-stat-label">Time</span>
+                    <span class="modal-stat-value" id="finalTime">0:00</span>
+                </div>
+            </div>
+
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="showMenu()">Menu</button>
+                <button class="btn btn-primary" onclick="restartCurrentGame()">Play Again</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Greek alphabet symbols
+        const greekAlphabetFull = ['Α', 'Β', 'Γ', 'Δ', 'Ε', 'Ζ', 'Η', 'Θ', 'Ι', 'Κ', 'Λ', 'Μ', 'Ν', 'Ξ', 'Ο', 'Π', 'Ρ', 'Σ'];
+        
+        // Game state
+        let currentPlayer = null;
+        let gameMode = 'solo';
+        let difficulty = 'easy';
+        let customGridRows = null;
+        let customGridCols = null;
+        let cards = [];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let score = 100;
+        let moves = 0;
+        let canFlip = true;
+        let timerInterval = null;
+        let seconds = 0;
+        let totalPairs = 8;
+
+        // Load player and leaderboard from localStorage
+        function loadPlayerData() {
+            const savedPlayer = localStorage.getItem('currentPlayer');
+            if (savedPlayer) {
+                currentPlayer = savedPlayer;
+                showMenuScreen();
+            }
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const playerName = document.getElementById('playerName').value.trim();
+            if (playerName) {
+                currentPlayer = playerName;
+                localStorage.setItem('currentPlayer', playerName);
+                showMenuScreen();
+            }
+        }
+
+        function logout() {
+            currentPlayer = null;
+            localStorage.removeItem('currentPlayer');
+            document.getElementById('loginScreen').style.display = 'block';
+            document.getElementById('menuScreen').classList.remove('active');
+            document.getElementById('playerName').value = '';
+        }
+
+        function showMenuScreen() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('menuScreen').classList.add('active');
+            document.getElementById('userName').textContent = currentPlayer;
+            document.getElementById('userAvatar').textContent = currentPlayer.charAt(0).toUpperCase();
+            updateLeaderboard();
+        }
+
+        function showTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (tab === 'play') {
+                document.getElementById('playTab').style.display = 'block';
+                document.getElementById('leaderboardTab').classList.remove('active');
+            } else {
+                document.getElementById('playTab').style.display = 'none';
+                document.getElementById('leaderboardTab').classList.add('active');
+                updateLeaderboard();
+            }
+        }
+
+        function setDifficulty(level) {
+            difficulty = level;
+            customGridRows = null;
+            customGridCols = null;
+            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        function setCustomGrid(rows, cols) {
+            const totalCards = rows * cols;
+            if (totalCards % 2 !== 0) {
+                alert('Grid must have an even number of cells!');
+                return;
+            }
+            
+            customGridRows = rows;
+            customGridCols = cols;
+            difficulty = 'custom';
+            
+            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        function setCustomGridFromInput() {
+            const rows = parseInt(document.getElementById('customRows').value);
+            const cols = parseInt(document.getElementById('customCols').value);
+            
+            if (!rows || !cols || rows < 2 || cols < 2 || rows > 8 || cols > 8) {
+                alert('Please enter valid rows and columns (2-8)');
+                return;
+            }
+            
+            const totalCards = rows * cols;
+            if (totalCards % 2 !== 0) {
+                alert('Grid must have an even number of cells! Try different dimensions.');
+                return;
+            }
+            
+            setCustomGrid(rows, cols);
+        }
+
+        function startGame(mode) {
+            gameMode = mode;
+            
+            if (difficulty === 'custom' && customGridRows && customGridCols) {
+                totalPairs = (customGridRows * customGridCols) / 2;
+            } else {
+                const pairsMap = {
+                    'easy': 8,
+                    'medium': 10,
+                    'hard': 18
+                };
+                totalPairs = pairsMap[difficulty];
+            }
+            
+            if (totalPairs > greekAlphabetFull.length) {
+                alert(`Not enough Greek letters for ${totalPairs} pairs! Maximum is ${greekAlphabetFull.length} pairs.`);
+                return;
+            }
+            
+            document.getElementById('menuScreen').classList.remove('active');
+            document.getElementById('gameScreen').classList.add('active');
+            
+            // Always show timer
+            document.getElementById('timerStat').style.display = 'flex';
+            startTimer();
+            
+            initGame();
+        }
+
+        function showMenu() {
+            document.getElementById('gameScreen').classList.remove('active');
+            document.getElementById('menuScreen').classList.add('active');
+            document.getElementById('gameOverModal').classList.remove('show');
+            
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+
+        function restartCurrentGame() {
+            document.getElementById('gameOverModal').classList.remove('show');
+            
+            seconds = 0;
+            if (timerInterval) clearInterval(timerInterval);
+            startTimer();
+            
+            initGame();
+        }
+
+        function startTimer() {
+            seconds = 0;
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                seconds++;
+                updateTimerDisplay();
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            const timeStr = `${mins}:${secs.toString().padStart(2, '0')}`;
+            document.getElementById('timer').textContent = timeStr;
+        }
+
+        function initGame() {
+            cards = [];
+            flippedCards = [];
+            matchedPairs = 0;
+            moves = 0;
+            canFlip = true;
+            
+            if (gameMode === 'zen') {
+                score = 999;
+            } else {
+                score = 100;
+            }
+
+            const greekSubset = greekAlphabetFull.slice(0, totalPairs);
+            const cardSymbols = [...greekSubset, ...greekSubset];
+            
+            for (let i = cardSymbols.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [cardSymbols[i], cardSymbols[j]] = [cardSymbols[j], cardSymbols[i]];
+            }
+
+            cards = cardSymbols.map((symbol, index) => ({
+                id: index,
+                symbol: symbol,
+                isFlipped: false,
+                isMatched: false
+            }));
+
+            const board = document.getElementById('gameBoard');
+            board.className = 'game-board';
+            
+            if (difficulty === 'custom' && customGridRows && customGridCols) {
+                board.style.gridTemplateColumns = `repeat(${customGridCols}, 1fr)`;
+            } else {
+                board.style.gridTemplateColumns = '';
+                if (totalPairs === 8) {
+                    board.classList.add('grid-4x4');
+                } else if (totalPairs === 10) {
+                    board.classList.add('grid-4x5');
+                } else {
+                    board.classList.add('grid-6x6');
+                }
+            }
+
+            renderBoard();
+            updateStats();
+        }
+
+        function renderBoard() {
+            const gameBoard = document.getElementById('gameBoard');
+            gameBoard.innerHTML = '';
+
+            cards.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'card';
+                cardElement.dataset.id = card.id;
+                
+                cardElement.innerHTML = `
+                    <div class="card-inner">
+                        <div class="card-face card-back">Ω</div>
+                        <div class="card-face card-front">${card.symbol}</div>
+                    </div>
+                `;
+                
+                if (card.isMatched) {
+                    cardElement.classList.add('matched', 'flipped');
+                } else if (card.isFlipped) {
+                    cardElement.classList.add('flipped');
+                }
+
+                cardElement.addEventListener('click', () => flipCard(card.id));
+                gameBoard.appendChild(cardElement);
+            });
+        }
+
+        function flipCard(cardId) {
+            if (!canFlip) return;
+
+            const card = cards[cardId];
+            
+            if (card.isFlipped || card.isMatched) return;
+            if (flippedCards.length >= 2) return;
+
+            card.isFlipped = true;
+            flippedCards.push(card);
+            renderBoard();
+
+            if (flippedCards.length === 2) {
+                canFlip = false;
+                moves++;
+                updateStats();
+                checkMatch();
+            }
+        }
+
+        function checkMatch() {
+            const [card1, card2] = flippedCards;
+
+            if (card1.symbol === card2.symbol) {
+                setTimeout(() => {
+                    card1.isMatched = true;
+                    card2.isMatched = true;
+                    matchedPairs++;
+                    flippedCards = [];
+                    canFlip = true;
+                    renderBoard();
+                    updateStats();
+                    checkGameEnd();
+                }, 600);
+            } else {
+                if (gameMode !== 'zen') {
+                    score = Math.max(0, score - 4);
+                }
+                updateStats();
+                
+                setTimeout(() => {
+                    const cardElements = document.querySelectorAll('.card.flipped:not(.matched)');
+                    cardElements.forEach(el => el.classList.add('wrong'));
+                }, 400);
+
+                setTimeout(() => {
+                    card1.isFlipped = false;
+                    card2.isFlipped = false;
+                    flippedCards = [];
+                    canFlip = true;
+                    renderBoard();
+                    checkGameEnd();
+                }, 1200);
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('moves').textContent = moves;
+            document.getElementById('matched').textContent = `${matchedPairs} / ${totalPairs}`;
+        }
+
+        function checkGameEnd() {
+            if (matchedPairs === totalPairs) {
+                setTimeout(() => {
+                    if (timerInterval) {
+                        clearInterval(timerInterval);
+                    }
+                    saveScore();
+                    showModal(
+                        '🎉',
+                        'Victory!',
+                        `Congratulations! You've matched all ${totalPairs} pairs!`,
+                        score,
+                        true
+                    );
+                }, 800);
+            } else if (score === 0 && gameMode !== 'zen') {
+                setTimeout(() => {
+                    if (timerInterval) {
+                        clearInterval(timerInterval);
+                    }
+                    showModal(
+                        '😢',
+                        'Game Over',
+                        'You ran out of points! Better luck next time.',
+                        score,
+                        false
+                    );
+                }, 800);
+            }
+        }
+
+        function saveScore() {
+            const leaderboard = JSON.parse(localStorage.getItem('leaderboard') || '[]');
+            
+            const newEntry = {
+                player: currentPlayer,
+                time: seconds,
+                score: score,
+                moves: moves,
+                date: new Date().toLocaleDateString(),
+                timestamp: Date.now()
+            };
+
+            leaderboard.push(newEntry);
+            leaderboard.sort((a, b) => a.time - b.time);
+            
+            const isNewRecord = leaderboard.indexOf(newEntry) < 10;
+            
+            if (leaderboard.length > 50) {
+                leaderboard.splice(50);
+            }
+            
+            localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+            
+            if (isNewRecord) {
+                document.getElementById('newRecordBanner').style.display = 'block';
+            }
+        }
+
+        function updateLeaderboard() {
+            const leaderboard = JSON.parse(localStorage.getItem('leaderboard') || '[]');
+            const top10 = leaderboard.slice(0, 10);
+            
+            const tbody = document.getElementById('leaderboardBody');
+            tbody.innerHTML = '';
+
+            if (top10.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem; color: #64748b;">No records yet. Be the first to play!</td></tr>';
+                return;
+            }
+
+            top10.forEach((entry, index) => {
+                const row = document.createElement('tr');
+                const isCurrentUser = entry.player === currentPlayer;
+                
+                if (isCurrentUser) {
+                    row.classList.add('current-user-row');
+                }
+
+                const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '';
+                const mins = Math.floor(entry.time / 60);
+                const secs = entry.time % 60;
+                const timeStr = `${mins}:${secs.toString().padStart(2, '0')}`;
+
+                row.innerHTML = `
+                    <td class="leaderboard-rank">
+                        ${medal ? `<span class="rank-medal">${medal}</span>` : `#${index + 1}`}
+                    </td>
+                    <td class="leaderboard-player">${entry.player}${isCurrentUser ? ' (You)' : ''}</td>
+                    <td class="leaderboard-time">${timeStr}</td>
+                    <td class="leaderboard-score">${entry.score}</td>
+                    <td class="leaderboard-date">${entry.date}</td>
+                `;
+
+                tbody.appendChild(row);
+            });
+        }
+
+        function showModal(icon, title, message, finalScore, isVictory) {
+            document.getElementById('modalIcon').textContent = icon;
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalMessage').textContent = message;
+            document.getElementById('finalScore').textContent = finalScore;
+            document.getElementById('finalMoves').textContent = moves;
+            
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            document.getElementById('finalTime').textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+            document.getElementById('finalTimeStat').style.display = 'flex';
+            
+            document.getElementById('gameOverModal').classList.add('show');
+        }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            loadPlayerData();
+        });
+    </script>
+    <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyAN917JaDPwDuwmW1Xs97RFECBp-BQoKN0",
+    authDomain: "memory-game-e5920.firebaseapp.com",
+    projectId: "memory-game-e5920",
+    storageBucket: "memory-game-e5920.firebasestorage.app",
+    messagingSenderId: "1010789745268",
+    appId: "1:1010789745268:web:4a86f69f87acd06e8bc721",
+    measurementId: "G-H55Q2CGQXK"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+</body>
+</html>
