@@ -970,6 +970,18 @@
 
             <!-- Leaderboard Tab -->
             <div id="leaderboardTab" class="leaderboard-view">
+
+<div style="text-align:center; margin-bottom:1rem;">
+  <select id="leaderboardDifficulty" onchange="updateLeaderboard()" 
+          style="padding:0.6rem 1rem; border-radius:8px; font-size:1rem;">
+    <option value="easy">🟢 Easy</option>
+    <option value="medium">🟡 Medium</option>
+    <option value="hard">🔴 Hard</option>
+    <option value="custom">🧩 Custom</option>
+  </select>
+</div>
+
+
                 <div class="leaderboard-header">
                     <h2 class="leaderboard-title">🏆 Top 10 Champions</h2>
                     <p class="leaderboard-subtitle">Fastest completion times</p>
@@ -1415,12 +1427,13 @@
         }
 
     async function saveScore() {
-      await addDoc(collection(db, "leaderboard"), {
+    await addDoc(collection(db, "leaderboard"), {
         player: currentPlayer,
         time: seconds,
         score: score,
         moves: moves,
-        date: new Date().toLocaleDateString()
+        date: new Date().toLocaleDateString(),
+        difficulty: difficulty   // 🟢 important for difficulty-wise leaderboard
     });
 
     updateLeaderboard();
@@ -1429,11 +1442,16 @@
 
        async function updateLeaderboard() {
 
-    const q = query(
-        collection(db, "leaderboard"),
-        orderBy("time"),
-        limit(10)
-    );
+   const selectedDifficulty =
+  document.getElementById("leaderboardDifficulty")?.value || "easy";
+
+  const q = query(
+  collection(db, "leaderboard"),
+  where("difficulty", "==", selectedDifficulty),
+  orderBy("time"),
+  limit(10)
+);
+
 
     const querySnapshot = await getDocs(q);
 
@@ -1542,7 +1560,8 @@ import {
   query,
   orderBy,
   limit,
-  deleteDoc
+  deleteDoc,
+  where
 } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -1567,6 +1586,7 @@ window.query = query;
 window.orderBy = orderBy;
 window.limit = limit;
 window.deleteDoc = deleteDoc;
+window.where = where;
 
 </script>
 
