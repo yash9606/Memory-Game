@@ -989,6 +989,12 @@
                         <!-- Leaderboard entries will be inserted here -->
                     </tbody>
                 </table>
+                <div style="text-align:center; margin-top: 1.5rem;">
+    <button class="btn btn-secondary" onclick="clearTop10()">
+        🗑 Clear Top 10 (Admin)
+    </button>
+</div>
+
             </div>
         </div>
 
@@ -1470,6 +1476,36 @@
             '<tr><td colspan="5" style="text-align:center;padding:2rem;">No records yet</td></tr>';
     }
 }
+async function clearTop10() {
+    const confirmClear = confirm(
+        "⚠️ Are you sure you want to clear the Top 10 leaderboard?\nThis cannot be undone."
+    );
+
+    if (!confirmClear) return;
+
+    try {
+        const q = query(
+            collection(db, "leaderboard"),
+            orderBy("time"),
+            limit(10)
+        );
+
+        const querySnapshot = await getDocs(q);
+
+        const deletePromises = [];
+        querySnapshot.forEach((docSnap) => {
+            deletePromises.push(deleteDoc(docSnap.ref));
+        });
+
+        await Promise.all(deletePromises);
+
+        alert("✅ Top 10 leaderboard cleared!");
+        updateLeaderboard();
+    } catch (error) {
+        console.error(error);
+        alert("❌ Failed to clear leaderboard");
+    }
+}
 
 
         function showModal(icon, title, message, finalScore, isVictory) {
@@ -1505,7 +1541,8 @@ import {
   getDocs,
   query,
   orderBy,
-  limit
+  limit,
+  deleteDoc
 } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -1529,6 +1566,7 @@ window.getDocs = getDocs;
 window.query = query;
 window.orderBy = orderBy;
 window.limit = limit;
+window.deleteDoc = deleteDoc;
 
 </script>
 
